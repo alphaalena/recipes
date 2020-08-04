@@ -1,10 +1,9 @@
 <template>
   <div class="container">
-    <add-recipe-component/>
-    <hr>
+    <add-recipe-component :on-add="addRecipe"/>
     <div class="columns">
-      <recipe-list-component/>
-      <recipe-detail-component/>
+      <recipe-list-component @select="selectRecipe" :recipes="recipes"/>
+      <recipe-detail-component :recipe="current" @removeRecipeDetail="removeRecipe"/>
     </div>
   </div>
 </template>
@@ -20,6 +19,26 @@ export default {
     RecipeDetailComponent,
     RecipeListComponent,
     AddRecipeComponent
+  },
+  data () {
+    return {
+      recipes: [],
+      current: null
+    }
+  },
+  methods: {
+    addRecipe (recipe) {
+      this.recipes.push(recipe)
+      // используем callback (для понимания как это работает) чтобы соединенить home и add-recipe-component,лучше использовать $emit
+    },
+    selectRecipe (id) {
+      this.current = this.recipes.find(r => r.id === id)
+      //  заносит в переменную current значение именно того id который находился в данном массиве
+    },
+    removeRecipe (id) {
+      this.current = null
+      this.recipes = this.recipes.filter(r => r.id !== id)
+    }
   }
 }
 </script>

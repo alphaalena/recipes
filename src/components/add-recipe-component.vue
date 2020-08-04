@@ -1,26 +1,65 @@
 <template>
-  <form class="form">
+  <form class="form" @submit.prevent="Submit">
     <h1>Добавить рецепт</h1>
-    <div>
+    <div v-if="visible">
       <div class="input">
-        <input type="text" placeholder="Название рецепта">
+        <input v-model="title" type="text" placeholder="Название рецепта">
       </div>
       <div class="input">
-        <input type="text" placeholder="Описание рецепта">
+        <input v-model="description" type="text" placeholder="Описание рецепта">
       </div>
     </div>
 
     <div class="buttons">
-      <button class="btn" type="submit">Создать</button>
-      <button class="btn secondary" type="button">Убрать форму</button>
+      <button class="btn" type="submit" :disabled="!valid">Создать</button>
+      <button class="btn secondary" type="button" @click="toggleForm">{{ visible ? 'Убрать форму ' : 'Показать форму'}}</button>
     </div>
   </form>
 </template>
 
 <script>
 export default {
-  name: 'addRecipeComponent'
+  name: 'addRecipeComponent',
+  data () {
+    return {
+      title: '',
+      description: '',
+      visible: true
+    }
+  },
+  props: {
+    onAdd: {
+      type: Function,
+      required: true
+    }
+  },
+  methods: {
+    toggleForm () {
+      this.visible = !this.visible
+    },
+    Submit () {
+      const recipe = {
+        title: this.title.trim(),
+        // метод trim() удаляет произвольные пробелы в начале и в конце строки
+        description: this.description.trim(),
+        id: Date.now().toString()
+      //  метод Date.now() возвращает колличество миллисекунд прошедших с января 1970г;
+      //   toString() приводит данное значение к строке
+      }
+      this.title = this.description = ''
+      //  очищаем формы
+      this.onAdd(recipe)
+    // добавляем в функцию addRecipe значения recipe
+    }
+  },
+  computed: {
+    valid () {
+      return this.title.trim() && this.description.trim()
+      // функция отслеживает когда значения title и description пустые
+    }
+  }
 }
+
 </script>
 
 <style>
